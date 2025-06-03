@@ -1,0 +1,1263 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // Removed useScroll, useTransform, useSpring
+import { 
+  Heart, 
+  ChevronRight, 
+  Instagram, 
+  Sparkles, 
+  ShieldCheck, 
+  Activity,
+  Check,
+  Droplets,
+  ArrowDown,
+  ShoppingBag,
+  Sun,
+  Moon,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  Send,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Menu,
+  X
+  // Removed ArrowRight, Award, Leaf, ArrowDownCircle, ExternalLink, Eye
+} from "lucide-react";
+import { 
+  RadarChart, 
+  PolarGrid, 
+  PolarAngleAxis, 
+  PolarRadiusAxis, 
+  Radar, 
+  Legend,
+  ResponsiveContainer 
+} from "recharts";
+import TypographyShowcase from "../components/ui/TypographyShowcase";
+
+// Custom biosphere components
+const BiosphereStyles = `
+  /* Biosphere Ecosystem Styles */
+  .biosphere-ecosystem {
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  /* Organic shapes */
+  .organic-blob {
+    border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+    filter: blur(40px);
+    opacity: 0.6;
+    z-index: 0;
+  }
+  
+  .microorganism {
+    position: relative;
+    transition: all 0.5s ease;
+  }
+  
+  .microorganism:hover {
+    transform: scale(1.05);
+  }
+  
+  .probiotic-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent);
+    animation: float 8s infinite ease-in-out;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(5deg); }
+    50% { transform: translateY(5px) rotate(-3deg); }
+    75% { transform: translateY(-5px) rotate(1deg); }
+  }
+
+  .ecosystem-grid {
+    display: grid;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .fluid-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    overflow: hidden;
+    z-index: 0;
+  }
+  
+  .fluid-gradient::before,
+  .fluid-gradient::after {
+    content: '';
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    top: -100%;
+    left: -100%;
+    background: radial-gradient(circle at center, rgba(165, 214, 167, 0.4) 0%, rgba(129, 199, 132, 0.2) 30%, rgba(0, 0, 0, 0) 70%);
+    animation: rotate 60s linear infinite;
+  }
+  
+  .fluid-gradient::after {
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle at center, rgba(100, 223, 223, 0.3) 0%, rgba(29, 233, 182, 0.1) 40%, rgba(0, 0, 0, 0) 70%);
+    animation: rotate 40s linear infinite reverse;
+  }
+  
+  .dark .fluid-gradient::before {
+    background: radial-gradient(circle at center, rgba(79, 209, 197, 0.3) 0%, rgba(72, 187, 177, 0.1) 30%, rgba(0, 0, 0, 0) 70%);
+  }
+  
+  .dark .fluid-gradient::after {
+    background: radial-gradient(circle at center, rgba(72, 187, 177, 0.2) 0%, rgba(79, 209, 197, 0.1) 40%, rgba(0, 0, 0, 0) 70%);
+  }
+  
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .glass-card {
+    position: relative;
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .dark .glass-card {
+    background-color: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(30, 41, 59, 0.3);
+  }
+  
+  .glass-card:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .dark .glass-card:hover {
+    border: 1px solid rgba(79, 209, 197, 0.3);
+  }
+  
+  /* Microbiome journey visualization */
+  .microbiome-journey {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .microbiome-node {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background: white;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+  
+  .dark .microbiome-node {
+    background: rgba(30, 41, 59, 0.8);
+  }
+  
+  .microbiome-node:hover {
+    transform: scale(1.1);
+    z-index: 3;
+  }
+  
+  .microbiome-path {
+    position: absolute;
+    overflow: visible;
+    stroke-dasharray: 10;
+    stroke-dashoffset: 1000;
+    animation: draw 3s forwards ease-in-out;
+  }
+  
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  /* Product sphere styles */
+  .product-sphere {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    perspective: 800px;
+  }
+  
+  .sphere-container {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    transform: translate(-50%, -50%);
+    animation: rotateSphere 30s infinite linear;
+  }
+  
+  .sphere-item {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.3s ease;
+  }
+  
+  .dark .sphere-item {
+    background: rgba(30, 41, 59, 0.8);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .sphere-item:hover {
+    transform: scale(1.2) translateZ(30px);
+    z-index: 10;
+  }
+  
+  @keyframes rotateSphere {
+    0% { transform: translate(-50%, -50%) rotateY(0) rotateX(10deg); }
+    100% { transform: translate(-50%, -50%) rotateY(360deg) rotateX(10deg); }
+  }
+`;
+
+// FluidGradient Component
+const FluidGradient = () => {
+  return <div className="fluid-gradient" aria-hidden="true"></div>;
+};
+
+// ProductSphere Component 
+const ProductSphere = () => {
+  const sphereRef = useRef(null);
+  
+  // Define interface for sphere items
+  interface SphereItem {
+    id: number;
+    transform: string;
+    icon: string;
+  }
+
+  const [sphereItems, setSphereItems] = useState<SphereItem[]>([]); // Use SphereItem[] type
+  
+  useEffect(() => {
+    // Generate sphere positions
+    const itemCount = 12;
+    const radius = 120;
+    const items = [];
+    
+    for (let i = 0; i < itemCount; i++) {
+      // Calculate positions on a sphere
+      const phi = Math.acos(-1 + (2 * i) / itemCount);
+      const theta = Math.sqrt(itemCount * Math.PI) * phi;
+      
+      const x = radius * Math.cos(theta) * Math.sin(phi);
+      const y = radius * Math.sin(theta) * Math.sin(phi);
+      const z = radius * Math.cos(phi);
+      
+      items.push({
+        id: i,
+        transform: `translateX(${x}px) translateY(${y}px) translateZ(${z}px)`,
+        icon: i % 4 === 0 ? "ShieldCheck" : 
+              i % 4 === 1 ? "Droplets" : 
+              i % 4 === 2 ? "Activity" : "Sparkles"
+      });
+    }
+    
+    setSphereItems(items);
+  }, []);
+  
+  return (
+    <div className="product-sphere" aria-hidden="true">
+      <motion.div 
+        className="sphere-container"
+        ref={sphereRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        {sphereItems.map(item => (
+          <motion.div
+            key={item.id}
+            className="sphere-item"
+            style={{ transform: item.transform }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: item.id * 0.1 }}
+          >
+            {item.icon === "ShieldCheck" && <ShieldCheck className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {item.icon === "Activity" && <Activity className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {item.icon === "Droplets" && <Droplets className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {item.icon === "Sparkles" && <Sparkles className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// MicrobiomeJourney Component
+const MicrobiomeJourney = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const journeyRef = useRef(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    
+    if (journeyRef.current) {
+      observer.observe(journeyRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  const journeySteps = [
+    { id: 1, x: '10%', y: '50%', label: 'Intake', description: 'Probiotics enter your system', icon: 'Droplets' },
+    { id: 2, x: '30%', y: '30%', label: 'Colonization', description: 'Beneficial bacteria establish in the gut', icon: 'Activity' },
+    { id: 3, x: '50%', y: '60%', label: 'Balance', description: 'Microbiome diversity improves', icon: 'Sparkles' },
+    { id: 4, x: '70%', y: '40%', label: 'Protection', description: 'Enhanced immune function', icon: 'ShieldCheck' },
+    { id: 5, x: '90%', y: '50%', label: 'Wellness', description: 'Overall health improvement', icon: 'Heart' }
+  ];
+  
+  return (
+    <div className="microbiome-journey" ref={journeyRef} aria-label="Microbiome journey visualization">
+      <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
+        <path
+          d={`M ${parseInt(journeySteps[0].x)} ${parseInt(journeySteps[0].y)} 
+              C ${parseInt(journeySteps[1].x) - 20} ${parseInt(journeySteps[0].y) + 50}, 
+                ${parseInt(journeySteps[1].x) - 30} ${parseInt(journeySteps[1].y) + 30}, 
+                ${parseInt(journeySteps[1].x)} ${parseInt(journeySteps[1].y)} 
+              C ${parseInt(journeySteps[2].x) - 40} ${parseInt(journeySteps[1].y) - 20}, 
+                ${parseInt(journeySteps[2].x) - 50} ${parseInt(journeySteps[2].y) - 50}, 
+                ${parseInt(journeySteps[2].x)} ${parseInt(journeySteps[2].y)} 
+              C ${parseInt(journeySteps[3].x) - 30} ${parseInt(journeySteps[2].y) - 30}, 
+                ${parseInt(journeySteps[3].x) - 20} ${parseInt(journeySteps[3].y) + 40}, 
+                ${parseInt(journeySteps[3].x)} ${parseInt(journeySteps[3].y)} 
+              C ${parseInt(journeySteps[4].x) - 40} ${parseInt(journeySteps[3].y) + 20}, 
+                ${parseInt(journeySteps[4].x) - 30} ${parseInt(journeySteps[4].y) - 30}, 
+                ${parseInt(journeySteps[4].x)} ${parseInt(journeySteps[4].y)}`}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth="3"
+          strokeLinecap="round"
+          className={`microbiome-path ${isVisible ? 'animate-draw' : ''}`}
+        />
+      </svg>
+      
+      {journeySteps.map((step, index) => (
+        <motion.div
+          key={step.id}
+          className="microbiome-node"
+          style={{ 
+            left: step.x, 
+            top: step.y, 
+            width: '80px', 
+            height: '80px',
+          }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={isVisible ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.5, delay: index * 0.3 }}
+        >
+          <div className="relative p-4">
+            {step.icon === 'ShieldCheck' && <ShieldCheck className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {step.icon === 'Activity' && <Activity className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {step.icon === 'Droplets' && <Droplets className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {step.icon === 'Sparkles' && <Sparkles className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+            {step.icon === 'Heart' && <Heart className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />}
+          </div>
+          
+          <motion.div
+            className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 w-40 text-center"
+            initial={{ opacity: 0, y: -10 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.3, delay: index * 0.3 + 0.2 }}
+          >
+            <span className="block text-sm font-bold text-emerald-600 dark:text-emerald-400">{step.label}</span>
+            <span className="block text-xs text-gray-600 dark:text-gray-300">{step.description}</span>
+          </motion.div>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// TestimonialOrganisms Component
+const TestimonialOrganisms = () => {
+  return (
+    <div className="relative h-full overflow-visible">
+      {/* Background microorganisms */}
+      <div className="absolute -z-10 inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="probiotic-particle absolute"
+            style={{
+              width: `${Math.random() * 30 + 10}px`,
+              height: `${Math.random() * 30 + 10}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              backgroundColor: `rgba(16, 185, 129, ${Math.random() * 0.1 + 0.05})`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 10 + 5}s`
+            }}
+            animate={{
+              x: [0, Math.random() * 40 - 20],
+              y: [0, Math.random() * 40 - 20],
+              rotate: [0, Math.random() * 360],
+              scale: [1, Math.random() * 0.5 + 0.8, 1]
+            }}
+            transition={{
+              duration: Math.random() * 10 + 15,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Organic blob backgrounds */}
+      <div className="absolute -z-20 top-1/4 left-1/4 w-1/2 h-1/2 organic-blob" 
+        style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 70%)' }}
+      ></div>
+      <div className="absolute -z-20 bottom-1/4 right-1/4 w-2/5 h-2/5 organic-blob" 
+        style={{ background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(14, 165, 233, 0.05) 70%)' }}
+      ></div>
+
+      {/* Active testimonial is rendered by parent component */}
+    </div>
+  );
+};
+
+// Type definitions
+interface SectionHeadingProps {
+  title: string;
+  subtitle?: string;
+  isVisible?: boolean;
+  highlightWord?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface RecipeCardProps {
+  recipe: Recipe; // Ensuring Recipe is defined below
+  isVisible?: boolean;
+}
+
+interface Product {
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+  icon?: string;      // Optional icon
+  tags?: string[];    // Optional tags array
+  [key: string]: any; // Allow other properties if any
+}
+
+interface BlogPost {
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  readTime: string;
+}
+
+interface Testimonial {
+  name: string;
+  title: string;
+  quote: string;
+  image: string;
+  rating: number;
+}
+
+interface Recipe { // Definition for Recipe
+  title: string;
+  description: string;
+  image: string;
+  prepTime: string;
+  category: string;
+  difficulty: string;
+}
+
+interface InstagramPost {
+  id: number;
+  image: string;
+  likes: number;
+  caption: string;
+}
+
+// Sample data
+const testimonials: Testimonial[] = [
+  {
+    name: "Sarah Johnson",
+    title: "Fitness Instructor",
+    quote: "Bogani yogurt has been a game-changer for my digestive health. I've tried many probiotics, but nothing compares to the natural benefits I get from this delicious yogurt!",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    rating: 5
+  },
+  {
+    name: "Michael Chen",
+    title: "Nutrition Coach",
+    quote: "I recommend Bogani to all my clients. It's not just the probiotics that make it special, but the clean ingredients and authentic flavors that make it a perfect addition to any healthy diet.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    rating: 5
+  },
+  {
+    name: "Amina Patel",
+    title: "Yoga Instructor",
+    quote: "Since adding Bogani to my morning routine, I've noticed significant improvements in my energy levels and overall gut health. It's now an essential part of my wellness journey.",
+    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+    rating: 5
+  }
+];
+
+const products: Product[] = [
+  {
+    name: "Classic Natural",
+    description: "Our signature plain yogurt, rich in probiotics with a creamy texture and tangy flavor.",
+    image: "/api/placeholder/250/250",
+    price: 4.99,
+    tags: ["No Sugar Added", "High Protein", "Probiotic"]
+  },
+  {
+    name: "Wild Berry Blend",
+    description: "A delicious mix of strawberries, blueberries, and blackberries with our probiotic yogurt.",
+    image: "/api/placeholder/250/250",
+    price: 5.49,
+    tags: ["Natural Flavors", "Low Sugar", "Antioxidants"]
+  },
+  {
+    name: "Tropical Mango",
+    description: "Sweet, juicy mangoes blended with our creamy probiotic yogurt for a taste of the tropics.",
+    image: "/api/placeholder/250/250",
+    price: 5.49,
+    tags: ["Vitamin C", "Natural Flavors", "Digestive Health"]
+  },
+  {
+    name: "Honey & Almond",
+    description: "Natural honey and crunchy almonds in our probiotic yogurt for a perfect balance of sweet and nutty.",
+    image: "/api/placeholder/250/250",
+    price: 5.99,
+    tags: ["Prebiotic", "Protein", "Omega-3"]
+  }
+];
+
+const recipes: Recipe[] = [
+  {
+    title: "Berry Breakfast Bowl",
+    description: "Start your day with our protein-packed yogurt bowl topped with fresh berries, honey, and granola.",
+    image: "/api/placeholder/400/300",
+    prepTime: "5 min",
+    category: "Breakfast",
+    difficulty: "Easy"
+  },
+  {
+    title: "Cucumber Yogurt Dip",
+    description: "A refreshing tzatziki-inspired dip perfect for vegetables, pita bread, or as a sauce for grilled meats.",
+    image: "/api/placeholder/400/300",
+    prepTime: "10 min",
+    category: "Appetizer",
+    difficulty: "Easy"
+  },
+  {
+    title: "Mango Lassi Smoothie",
+    description: "A tropical smoothie made with our yogurt, fresh mango, and a hint of cardamom for an energy boost.",
+    image: "/api/placeholder/400/300",
+    prepTime: "7 min",
+    category: "Beverage",
+    difficulty: "Easy"
+  }
+];
+
+const instagramPosts: InstagramPost[] = [
+  {
+    id: 1,
+    image: "/api/placeholder/300/300",
+    likes: 245,
+    caption: "Start your morning right with our protein-packed Bogani yogurt! #HealthyBreakfast #BoganiYogurt"
+  },
+  {
+    id: 2,
+    image: "/api/placeholder/300/300",
+    likes: 182,
+    caption: "Behind the scenes at our farm where we source the freshest ingredients for your favorite yogurt!"
+  },
+  {
+    id: 3,
+    image: "/api/placeholder/300/300",
+    likes: 312,
+    caption: "Our new Wild Berry flavor is here! Have you tried it yet? #NewFlavor #BoganiLove"
+  },
+  {
+    id: 4,
+    image: "/api/placeholder/300/300",
+    likes: 276,
+    caption: "The perfect afternoon snack that's both delicious and good for your gut health! #HealthySnacking"
+  }
+];
+
+const blogPosts: BlogPost[] = [
+  {
+    title: "The Science Behind Probiotics",
+    excerpt: "Discover how beneficial bacteria support your digestive system and overall health.",
+    image: "/api/placeholder/400/300",
+    category: "Health",
+    readTime: "5 min"
+  },
+  {
+    title: "5 Delicious Ways to Enjoy Yogurt",
+    excerpt: "Creative recipes that transform your daily yogurt into exciting culinary experiences.",
+    image: "/api/placeholder/400/300",
+    category: "Recipes",
+    readTime: "4 min"
+  },
+  {
+    title: "Gut Health and Immunity Connection",
+    excerpt: "How a healthy gut microbiome strengthens your immune system against common illnesses.",
+    image: "/api/placeholder/400/300",
+    category: "Wellness",
+    readTime: "6 min"
+  }
+];
+
+const healthBenefits = [
+  {
+    title: "Gut Health",
+    description: "Our proprietary blend of probiotics helps maintain a healthy gut microbiome, supporting digestion and nutrient absorption.",
+    icon: "ShieldCheck"
+  },
+  {
+    title: "Immune Support",
+    description: "A healthy gut plays a crucial role in immune function. Our yogurt provides beneficial bacteria that support your body's natural defenses.",
+    icon: "Activity"
+  },
+  {
+    title: "Digestive Balance",
+    description: "Regular consumption of our probiotic yogurt may help reduce bloating, gas, and other digestive discomforts.",
+    icon: "Droplets"
+  },
+  {
+    title: "Nutrient Rich",
+    description: "Packed with protein, calcium, and essential vitamins, our yogurt provides comprehensive nutritional benefits in every serving.",
+    icon: "Sparkles"
+  }
+];
+
+// Stats for counter section
+const statsData = [
+  { value: 20000, label: "Happy Customers", suffix: "+" },
+  { value: 5, label: "Delicious Flavors", suffix: "" },
+  { value: 100, label: "Local Farmers Supported", suffix: "+" },
+  { value: 1.5, label: "Million Liters Produced", suffix: "M+" }
+];
+
+// Custom hooks
+const useTheme = () => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
+  useEffect(() => {
+    const savedTheme = localStorage?.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    }
+  }, []);
+
+  useEffect(() => {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+        localStorage.setItem('theme', theme);
+  }, [theme]);
+  
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  }, []);
+  
+  return { theme, toggleTheme };
+};
+
+const useCart = () => {
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  
+  const addToCart = useCallback((product: Product) => {
+    setCartItems(prev => [...prev, product]);
+  }, []);
+  
+  return { cartItems, addToCart };
+};
+
+// Custom hook for section visibility
+const useVisibleSections = () => { // Removed unused sectionIds parameter
+  const [visibleSections, setVisibleSections] = useState<string[]>([]);
+  
+  const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      if (entry.isIntersecting) {
+        setVisibleSections(prev => prev.includes(id) ? prev : [...prev, id]);
+        } else {
+        setVisibleSections(prev => prev.filter(sectId => sectId !== id));
+      }
+    });
+  }, []);
+  
+  const registerSection = useCallback((id: string, ref: React.RefObject<HTMLElement | null>) => {
+    if (ref.current) {
+      const observer = new IntersectionObserver(observerCallback, {
+        threshold: 0.2,
+        rootMargin: '-10% 0px -10% 0px'
+      });
+      observer.observe(ref.current);
+      
+      return () => {
+        if (ref.current) observer.unobserve(ref.current); // Check ref.current before unobserve
+      };
+    }
+  }, [observerCallback]);
+  
+  return { visibleSections, registerSection };
+};
+
+// Helper components
+const SectionHeading: React.FC<SectionHeadingProps> = ({ 
+  title, 
+  subtitle, 
+  isVisible = true, 
+  highlightWord = "", 
+  className = "", 
+  style = {} 
+}) => {
+  const words = title.split(' ');
+  const highlightedTitle = highlightWord 
+    ? words.map((word: string) => 
+        word === highlightWord || highlightWord.includes(word) 
+          ? `<span class="highlight">${word}</span>` 
+          : word
+      ).join(' ') 
+    : title;
+
+  return (
+    <div className={`mb-12 ${className}`}>
+      <motion.h2 
+        className="text-3xl md:text-4xl font-bold mb-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
+        transition={{ duration: 0.6 }}
+        style={style}
+        dangerouslySetInnerHTML={{ __html: highlightedTitle }}
+      />
+      {subtitle && (
+        <motion.p 
+          className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          {subtitle}
+        </motion.p>
+      )}
+    </div>
+  );
+};
+
+const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isVisible = true }) => {
+  return (
+    <motion.div 
+      className="rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-800 h-full transform transition-transform"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)' }}
+    >
+      <div className="relative h-48 overflow-hidden">
+        <img 
+          src={recipe.image} 
+          alt={recipe.title} 
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        />
+        <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-full px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          {recipe.category}
+      </div>
+    </div>
+      <div className="p-5 flex flex-col h-[calc(100%-12rem)]">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+            <Clock className="w-3 h-3 mr-1" /> {recipe.prepTime}
+          </span>
+          <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-600 dark:text-gray-300">
+            {recipe.difficulty}
+          </span>
+  </div>
+        <h3 className="text-xl font-bold mb-2 text-emerald-700 dark:text-emerald-400">{recipe.title}</h3>
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 flex-grow">{recipe.description}</p>
+        <a href="#" className="text-emerald-600 dark:text-emerald-400 font-medium text-sm mt-auto inline-flex items-center hover:text-emerald-700 dark:hover:text-emerald-300">
+          View Recipe <ChevronRight className="w-4 h-4 ml-1" />
+        </a>
+      </div>
+    </motion.div>
+  );
+};
+
+// Main component
+  const Home = () => {
+    // const { theme, toggleTheme } = useTheme(); // REMOVE THIS LINE
+    // const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = useCart(); // REMOVE THIS LINE
+    // const visibleSections = useVisibleSections(); // REMOVE THIS LINE
+    // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // REMOVE THIS LINE
+
+    // Ref for the hero section to use for intersection observer
+    const heroRef = useRef<HTMLDivElement>(null);
+    const [heroInView, setHeroInView] = useState(false);
+
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          setHeroInView(entry.isIntersecting);
+        },
+        { threshold: 0.1 } // Adjust threshold as needed
+      );
+
+      if (heroRef.current) {
+        observer.observe(heroRef.current);
+      }
+
+      return () => {
+        if (heroRef.current) {
+          observer.unobserve(heroRef.current);
+        }
+      };
+    }, []);
+
+  // Refs for sections 
+    const sectionRefs = {
+    hero: useRef<HTMLElement>(null),
+    benefits: useRef<HTMLElement>(null),
+    products: useRef<HTMLElement>(null),
+    testimonials: useRef<HTMLElement>(null),
+    recipes: useRef<HTMLElement>(null),
+    blog: useRef<HTMLElement>(null),
+    contact: useRef<HTMLElement>(null),
+    instagram: useRef<HTMLElement>(null),
+    subscribe: useRef<HTMLElement>(null)
+  };
+
+  // Custom hooks
+  const { visibleSections, registerSection } = useVisibleSections();
+  const { theme, toggleTheme } = useTheme();
+  const { cartItems, addToCart } = useCart();
+
+  // State management
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+  
+  // Register sections with the visibility system
+  useEffect(() => {
+    Object.entries(sectionRefs).forEach(([key, ref]) => {
+      registerSection(key, ref);
+    });
+  }, [registerSection]);
+
+  // Simulate loading state for products
+  useEffect(() => {
+      setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Testimonial auto-rotation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [activeTestimonial]);
+
+  // Handle subscription form
+  const handleSubscribe = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (subscribeEmail) {
+      setIsSubscribed(true);
+      // In a real app, you would send this to your API
+      console.log("Subscribed with:", subscribeEmail);
+    }
+  }, [subscribeEmail]);
+
+  // Handle contact form
+  const handleContactSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, you would send this to your API
+    console.log("Contact form submitted:", formData);
+    
+    // Clear form
+    setFormData({
+      name: "",
+      email: "",
+      message: ""
+    });
+    
+    // Show success message
+    alert("Thank you for your message! We'll get back to you soon.");
+  }, [formData]);
+
+  // Handle contact form input changes
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  }, []);
+
+    // Scroll to section function
+  const scrollToSection = useCallback((ref: React.RefObject<HTMLElement | null>) => {
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
+        setMenuOpen(false);
+    }
+  }, []);
+
+    // Benefits chart data for recharts
+    const benefitsData = [
+      {
+        subject: 'Gut Health',
+        A: 90,
+        fullMark: 100,
+      },
+      {
+        subject: 'Immunity',
+        A: 85,
+        fullMark: 100,
+      },
+      {
+        subject: 'Digestion',
+        A: 95,
+        fullMark: 100,
+      },
+      {
+        subject: 'Nutrient Absorption',
+        A: 80,
+        fullMark: 100,
+      },
+      {
+        subject: 'Overall Wellness',
+        A: 88,
+        fullMark: 100,
+      },
+    ];
+
+    // Product skeleton loader
+    const ProductSkeleton = () => (
+      <div className="rounded-lg bg-white dark:bg-gray-800 shadow-md p-4 h-full animate-pulse">
+        <div className="rounded-full bg-gray-200 dark:bg-gray-700 w-12 h-12 mb-4"></div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-4"></div>
+        <div className="flex gap-2 mb-4">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+        </div>
+        <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto my-4"></div>
+        <div className="flex justify-between items-center mt-4">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+        </div>
+      </div>
+    );
+
+    // Navigation items
+    const navItems = [
+      { name: "Home", ref: sectionRefs.hero },
+      { name: "Benefits", ref: sectionRefs.benefits },
+      { name: "Products", ref: sectionRefs.products },
+      { name: "Recipes", ref: sectionRefs.recipes },
+      { name: "Testimonials", ref: sectionRefs.testimonials },
+      { name: "Blog", ref: sectionRefs.blog },
+      { name: "Contact", ref: sectionRefs.contact }
+    ];
+
+  return (
+      <div className={`bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col ${theme}`}>
+        {/* Include biosphere styles */}
+      <style dangerouslySetInnerHTML={{ __html: BiosphereStyles }} />
+      
+        {/* Fixed header/navigation */}
+        <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 transition-all duration-300 shadow-sm">
+          <div className="container mx-auto px-4">
+            <nav className="flex items-center justify-between py-4">
+              <div className="flex items-center">
+                <a href="#" className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  Bogani
+                </a>
+              </div>
+              
+              {/* Desktop Navigation */}
+              <ul className="hidden md:flex space-x-6">
+                {navItems.map((item) => (
+                  <li key={item.name}>
+                    <button
+                      onClick={() => scrollToSection(item.ref)}
+                      className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors py-2"
+                    >
+                      {item.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              
+              <div className="flex items-center space-x-4">
+                {/* Theme Toggle */}
+                <button 
+        onClick={toggleTheme}
+        aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={theme}
+            initial={{ rotate: -30, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: 30, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </motion.div>
+        </AnimatePresence>
+                </button>
+                
+                {/* Cart Button */}
+          <div className="relative">
+                  <button 
+                    className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                    aria-label="Shopping cart"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                  </button>
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-emerald-600 dark:bg-emerald-500 text-white text-xs rounded-full">
+              {cartItems.length}
+            </span>
+                  )}
+          </div>
+                
+                {/* Mobile Menu Button */}
+                <button 
+                  className="md:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              </div>
+            </nav>
+          </div>
+        </header>
+        
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div 
+              className="fixed inset-0 bg-white dark:bg-gray-900 z-40 pt-20 px-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ul className="space-y-4 py-4">
+                {navItems.map((item) => (
+                  <li key={item.name}>
+                    <button
+                      onClick={() => scrollToSection(item.ref)}
+                      className="text-gray-800 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-lg font-medium w-full text-left py-2 border-b border-gray-100 dark:border-gray-800"
+                    >
+                      {item.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+        </motion.div>
+      )}
+        </AnimatePresence>
+
+        <main className="pt-16"> {/* Add padding to account for fixed header */}
+      {/* Hero Section */}
+      <section 
+        ref={sectionRefs.hero} // Assuming sectionRefs.hero is the correct ref for the hero section
+        id="hero"
+        className="relative min-h-[90vh] flex items-center bg-gradient-to-b from-emerald-50 to-white dark:from-gray-900 dark:to-gray-800"
+        aria-label="Hero section"
+      >
+        <FluidGradient /> 
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-center md:text-left"
+            >
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+                Nurture Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-yogurt-red to-red-400 dark:from-accent-green dark:to-green-400">Wellness</span>,
+                <br />Naturally with Bogani.
+              </h1>
+              <p className="font-sans text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-xl mx-auto md:mx-0">
+                Discover the vibrant taste of health with our premium probiotic yogurts, crafted with care and bursting with natural goodness.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }} 
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-yogurt-red text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-red-700 transition-colors duration-300 text-lg flex items-center justify-center gap-2"
+                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Explore Products <ChevronRight size={20} />
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.05 }} 
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 font-semibold px-8 py-3 rounded-full shadow-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300 text-lg flex items-center justify-center gap-2"
+                >
+                  Our Story <Heart size={18} className="text-yogurt-red dark:text-accent-green" />
+                </motion.button>
+              </div>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="hidden md:block relative"
+            >
+              {/* Placeholder for a 3D yogurt model or lifestyle image */}
+              <img 
+                src="/src/assets/brand yorughut.jpg" 
+                alt="Bogani Yogurt Varieties" 
+                className="rounded-3xl shadow-2xl object-cover aspect-square max-w-md mx-auto transform transition-all duration-500 hover:scale-105"
+              />
+               <div className="absolute -top-8 -left-8 w-32 h-32 bg-accent-green/20 rounded-full filter blur-2xl opacity-70 animate-pulse"></div>
+               <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-yogurt-red/20 rounded-full filter blur-2xl opacity-70 animate-pulse delay-1000"></div>
+            </motion.div>
+          </div>
+        </div>
+        <motion.div 
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          aria-hidden="true"
+        >
+          <ArrowDown className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+        </motion.div>
+      </section>
+
+      <TypographyShowcase />
+
+      {/* Our Story Section */}
+      <section 
+        ref={sectionRefs.benefits} 
+        id="benefits" 
+        className="py-20 bg-white dark:bg-gray-800 relative"
+        aria-label="Benefits section"
+      >
+        <div className="container mx-auto px-4 relative z-10">
+          <SectionHeading 
+            title="The Bogani Difference" 
+            subtitle="Discover what makes our probiotic yogurt unique and beneficial for your health."
+            isVisible={visibleSections.includes('benefits')}
+            highlightWord="Bogani"
+            className="text-center"
+            style={{ color: '#047857' }} // emerald-700
+          />
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {healthBenefits.map((benefit, index) => (
+              <motion.div
+                key={index}
+                className="glass-card p-6 text-center"
+                initial={{ opacity: 0, y: 30 }}
+                animate={visibleSections.includes('benefits') ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                  {benefit.icon === "ShieldCheck" && <ShieldCheck className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />}
+                  {benefit.icon === "Activity" && <Activity className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />}
+                  {benefit.icon === "Droplets" && <Droplets className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />}
+                  {benefit.icon === "Sparkles" && <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-emerald-700 dark:text-emerald-400">{benefit.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300">{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Microbiome Journey Visualization */}
+          <div className="mt-20">
+            <SectionHeading 
+              title="Your Microbiome Journey" 
+              subtitle="Follow the path of how Bogani probiotics work within your body to support wellness."
+              isVisible={visibleSections.includes('benefits')}
+              highlightWord="Microbiome"
+              className="text-center"
+              style={{ color: '#047857' }} // emerald-700
+            />
+            
+            <div className="max-w-5xl mx-auto">
+              <MicrobiomeJourney />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Add other sections here as needed */}
+      
+      </main>
+    </div>
+  );
+};
+
+export default Home;

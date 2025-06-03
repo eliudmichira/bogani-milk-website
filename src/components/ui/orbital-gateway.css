@@ -1,0 +1,151 @@
+/* Add this to orbital-gateway.css */
+
+.orbital-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hamburger icon styling */
+.hamburger-icon {
+  position: relative;
+  width: 24px;
+  height: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+}
+
+.hamburger-icon.open span:first-child {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:last-child {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Mobile menu styling */
+.mobile-menu {
+  overflow: hidden;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Utility section styling */
+.nav-utilities {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Custom brand styles for Bogani */
+.brand-logo {
+  height: 40px;
+  transition: all 0.3s ease;
+  transform-origin: left center;
+}
+
+@media (min-width: 768px) {
+  .brand-logo {
+    height: 45px;
+  }
+}
+
+/* Improved focus styles for accessibility */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid rgba(230, 0, 0, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth transitions */
+a, button {
+  transition: all 0.2s ease;
+}
+
+/* Add subtle hover effect on nav items */
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.nav-item-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-item-hover:hover::after {
+  opacity: 1;
+}
+
+/* Add styles for the BrandIdentity component */
+.brand-identity {
+  display: flex;
+  align-items: center;
+}
+
+.brand-identity img {
+  height: 100%;
+  width: auto;
+}
+
+.orbital-gateway {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gateway-sphere {
+  /* ... existing code ... */
+}

@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Clash+Display:wght@400;500;600;700&display=swap'); */
+
+:root {
+  /* Primary palette - Biomorphic colors */
+  --color-primary: #D50000; /* Yogurt red */
+  --color-secondary: #4FC1E9; /* Bioluminescent blue */
+  --color-accent: #4CAF50; /* Probiotic green */
+  --color-tertiary: #9C27B0; /* Berry purple */
+  --color-highlight: #F2EA7E; /* Cream yellow */
+  
+  /* Functional colors - Light theme */
+  --color-background: #FFFFFF; 
+  --color-surface: rgba(0, 0, 0, 0.03);
+  --color-on-surface: rgba(0, 0, 0, 0.87);
+  --color-inactive: rgba(0, 0, 0, 0.3);
+  --color-completed: var(--color-accent);
+  
+  /* Glass effect variables - Light theme */
+  --glass-background: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  
+  /* Typography - font stacks are now managed by Tailwind */
+  /* --font-display: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif; */
+  /* --font-body: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif; */
+  
+  /* font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif; */
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: #181818;
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Bogani Brand Colors */
+  --bogani-green: #7ED321;
+  --bright-white: #FFFFFF;
+  --fresh-berry-red: #D0021B;
+  --charcoal-black: #333333;
+  --background-light: #FFFFFF;
+  
+  /* Dark Theme Variables (can be adjusted) */
+  --background-dark: #111827; /* Tailwind gray-900, adjust as needed */
+  --text-dark-theme: var(--bright-white);
+}
+
+/* Dark mode variables */
+.dark {
+  /* Functional colors - Dark theme */
+  --color-background: #121A29;
+  --color-surface: rgba(255, 255, 255, 0.05);
+  --color-on-surface: rgba(255, 255, 255, 0.87);
+  --color-inactive: rgba(255, 255, 255, 0.3);
+  
+  /* Glass effect variables - Dark theme */
+  --glass-background: rgba(18, 26, 41, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+  
+  color-scheme: dark;
+}
+
+/* Theme variations based on product flavors */
+.theme-strawberry {
+  --product-color: var(--color-primary);
+  --product-glow: rgba(213, 0, 0, 0.1);
+}
+
+.theme-vanilla {
+  --product-color: var(--color-highlight);
+  --product-glow: rgba(242, 234, 126, 0.1);
+}
+
+.theme-berry {
+  --product-color: var(--color-tertiary);
+  --product-glow: rgba(156, 39, 176, 0.1);
+}
+
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+  color: var(--color-primary);
+}
+
+body {
+  font-family: 'Poppins', sans-serif; /* Explicitly Poppins */
+  font-weight: 300; /* Light for body text */
+  color: var(--charcoal-black);
+  background-color: var(--background-light);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply font-sans; /* This will now correctly apply Poppins with weight 300 */
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Dark mode styles for body */
+.dark body {
+  color: var(--text-dark-theme);
+  background-color: var(--background-dark);
+  font-weight: 300; /* Ensure dark mode also uses light weight for body */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif; /* Explicitly Poppins */
+  font-weight: 600; /* Bold for headers */
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--charcoal-black); /* Use brand charcoal black */
+  @apply font-display; /* This will now correctly apply Poppins with weight 600 */
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: var(--text-dark-theme); /* Use brand variable for dark theme text */
+  font-weight: 600; /* Ensure dark mode also uses bold for headers */
+}
+
+.display-text {
+  font-size: clamp(2.8rem, 3.5vw, 4rem);
+  font-weight: 700;
+  background: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-tertiary),
+    var(--color-accent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.dark .display-text {
+  background: linear-gradient(
+    to right,
+    var(--color-highlight),
+    var(--color-secondary),
+    var(--color-accent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Glass card styling - Light theme */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+/* Glass card styling - Dark theme */
+.dark .glass-card {
+  background: rgba(18, 26, 41, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.2),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.8),
+    transparent 60%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.fluid-gradient {
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #D50000 0deg,
+    #9C27B0 72deg,
+    #4FC1E9 144deg,
+    #4CAF50 216deg,
+    #F2EA7E 288deg,
+    #D50000 360deg
+  );
+  filter: blur(40px);
+  opacity: 0.1;
+  mix-blend-mode: color-multiply;
+  position: absolute;
+  border-radius: 50%;
+  transform-origin: center center;
+  animation: rotate 20s linear infinite, pulse 8s ease-in-out infinite alternate;
+}
+
+/* Nucleus Navigation Styles */
+.nucleus-navigation {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.nucleus-item {
+  position: relative;
+}
+
+.nucleus-node {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Microbiome Journey Styles */
+.microbiome-journey .journey-timeline {
+  position: relative;
+}
+
+.microbiome-journey .connector {
+  right: calc(-50% - 0.5rem);
+  width: calc(100% + 1rem);
+}
+
+/* Product Sphere Styles */
+.product-sphere {
+  perspective: 1000px;
+}
+
+/* Biosphere Particles */
+.biosphere-particles {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+}
+
+/* Example of using a variable */
+.my-component {
+  background-color: var(--bogani-green);
+  color: var(--bright-white);
+}
