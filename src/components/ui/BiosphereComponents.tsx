@@ -976,41 +976,4 @@ export const BiosphereStyles = `
 }
 `;
 
-// Export a custom hook for theme toggling
-export const useThemeToggle = (initialTheme = 'light') => {
-  const [theme, setTheme] = useState(initialTheme);
-  
-  useEffect(() => {
-    // Check for system preference
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-    
-    // Get saved preference or use system theme
-    const savedTheme = localStorage.getItem('biosphere-theme');
-    const initialTheme = savedTheme || systemTheme;
-    
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
-    
-    // Listen for system changes
-    const handleChange = () => {
-      if (!localStorage.getItem('biosphere-theme')) {
-        const newTheme = mediaQuery.matches ? 'dark' : 'light';
-        setTheme(newTheme);
-        document.documentElement.classList.toggle('dark', newTheme === 'dark');
-      }
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-  
-  const toggleTheme = useCallback(() => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    localStorage.setItem('biosphere-theme', newTheme);
-  }, [theme]);
-  
-  return { theme, toggleTheme };
-};
+// useThemeToggle hook definition removed.

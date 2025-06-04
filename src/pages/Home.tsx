@@ -48,8 +48,8 @@ import ProductShowcaseSection from "./Home/components/ProductShowcaseSection";
 import TestimonialsSection from "./Home/components/TestimonialsSection";
 import SubscriptionBannerSection from "./Home/components/SubscriptionBannerSection";
 import InstagramFeedSection from "./Home/components/InstagramFeedSection";
-import useTheme from "../../hooks/useTheme"; // Import useTheme hook
-import useCart from "../../hooks/useCart";
+import { useTheme } from "../../context/ThemeContext"; // Corrected import path
+import { useCart } from "../../context/CartContext"; // Import from CartContext
 import useVisibleSections from "../../hooks/useVisibleSections";
 import styles from './Home.module.css'; // Import CSS module
 

@@ -185,9 +185,15 @@ const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                 </div>
                 <button
                   className="px-4 py-2 bg-accent-green text-white rounded-xl hover:bg-accent-green/90 transition-colors flex items-center gap-2"
-                  onClick={() => addToCart(product)}
+                  onClick={() => addToCart({
+                    id: product.name, // Using product.name as a temporary ID
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                  })}
                 >
-                  <ShoppingBag className="w-4 h-4" />
+                  <ShoppingBag className="w-4 h-4" aria-hidden="true" />
                   Add to Cart
                 </button>
               </div>

@@ -18,41 +18,15 @@ import {
 } from 'lucide-react';
 import whiteLogo from "../../assets/white bogani logo.png";
 import blackLogo from "../../assets/black bogani logo.png";
+import { useTheme } from '../../context/ThemeContext'; // Import actual useTheme
 
 // Optional interface for theme context if you're using a theme provider
-interface ThemeContextType {
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
-}
+// interface ThemeContextType { // This might be defined in ThemeContext.tsx
+//   theme: 'light' | 'dark';
+//   toggleTheme: () => void;
+// }
 
-// You can use this with your existing theme context
-// const useTheme = () => useContext(ThemeContext) as ThemeContextType;
-
-// If you don't have a theme context yet, we'll create a simple theme state
-const useFakeTheme = (): ThemeContextType => {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
-      return savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    }
-    return 'light';
-  });
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
-  return { theme, toggleTheme };
-};
+// useFakeTheme hook definition removed.
 
 interface NavItemProps {
   to: string;
@@ -136,7 +110,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
   const location = useLocation();
-  const { theme, toggleTheme } = useFakeTheme(); // Replace with your actual theme hook
+  const { theme, toggleTheme } = useTheme(); // Use actual useTheme
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -258,7 +232,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
               whileTap={{ scale: 0.9 }}
               onClick={toggleTheme}
               className="p-2 rounded-full text-[color:var(--charcoal-black)] dark:text-[color:var(--bright-white)] hover:bg-[color:var(--bogani-green)]/10 dark:hover:bg-[color:var(--bogani-green)]/20 transition-colors"
-              aria-label="Toggle theme"
+              aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
             >
               {theme === 'light' ? <Moon size={20} className="text-gray-700 dark:text-gray-300" /> : <Sun size={20} className="text-yellow-500 dark:text-yellow-400" />}
             </motion.button>
@@ -297,6 +271,8 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="hidden p-2 rounded-full text-[color:var(--charcoal-black)] dark:text-[color:var(--bright-white)] hover:bg-[color:var(--bogani-green)]/10 dark:hover:bg-[color:var(--bogani-green)]/20 transition-colors"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen.toString()}
+              aria-controls="mobile-menu-overlay"
             >
               {mobileMenuOpen ? (
                 <X size={24} />
@@ -320,6 +296,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartItemCount = 0 }) => {
             onClick={() => setMobileMenuOpen(false)}
           >
             <motion.div
+              id="mobile-menu-overlay"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}

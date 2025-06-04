@@ -41,12 +41,13 @@ function FooterSection() { // Renamed component
             <p className="mb-6 text-textLight dark:text-gray-400">
               Join our newsletter for the latest updates and exclusive offers.
             </p>
-            <form className="relative" onSubmit={(e: React.FormEvent) => e.preventDefault()}> {/* Added type for e */}
+            <form className="relative" onSubmit={(e: React.FormEvent) => e.preventDefault()}>
+              <label htmlFor="newsletter-email-footer" className="sr-only">Your email for newsletter subscription</label>
               <Input
+                id="newsletter-email-footer"
                 type="email"
                 placeholder="Enter your email"
                 className="pr-12 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                // Removed backdrop-blur - might not be needed/desired
               />
               <Button
                 type="submit"

@@ -128,6 +128,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTestimonial}
+              id={`testimonial-panel-${activeTestimonial}`}
+              role="tabpanel"
+              aria-labelledby={`testimonial-tab-${activeTestimonial}`}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -167,10 +170,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-6" role="tablist">
             {testimonialsData.map((_, index) => (
               <button
                 key={index}
+                id={`testimonial-tab-${index}`}
+                role="tab"
+                aria-selected={index === activeTestimonial}
+                aria-controls={`testimonial-panel-${index}`}
                 className={`w-3 h-3 rounded-full transition-colors ${index === activeTestimonial ? 'bg-yogurt-red' : 'bg-gray-300 dark:bg-gray-700'}`}
                 onClick={() => setActiveTestimonial(index)}
                 aria-label={`View testimonial ${index + 1}`}
